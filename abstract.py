@@ -140,11 +140,11 @@ class ReBeL:
 
     # 辅助函数，具体实现需要根据游戏定义
 
-    def is_leaf(self, beta):
+    def is_leaf(self, beta) -> bool:
         """
         判断beta是否为叶节点。
         """
-        pass
+        return beta.is_leaf()
 
     def get_infostates(self, beta):
         """
