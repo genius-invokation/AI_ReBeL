@@ -39,3 +39,21 @@ class CustomTransformerModel(nn.Module):
         # 取最后一个时间步的输出，或者根据需求进行池化
         output = self.fc_out(transformer_output[-1])
         return output
+
+
+class CombinedModel(nn.Module):
+    def __init__(self, vocab_size, embed_dim, num_heads, trans_hidden_dim, trans_layers, dnn_hidden_dim, output_dim, dropout=0.1):
+        super(CombinedModel, self).__init__()
+        self.transformer = CustomTransformerModel(vocab_size, embed_dim, num_heads, trans_hidden_dim, trans_layers, output_dim, dropout)
+        # 额外的 DNN 层
+        self.dnn = nn.Sequential(
+            nn.Linear(output_dim, dnn_hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(dnn_hidden_dim, output_dim)
+        )
+
+    def forward(self, src, src_key_padding_mask=None):
+        transformer_output = self.transformer(src, src_key_padding_mask)
+        output = self.dnn(transformer_output)
+        return output
